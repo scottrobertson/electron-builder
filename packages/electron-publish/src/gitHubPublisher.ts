@@ -150,6 +150,11 @@ export class GitHubPublisher extends HttpPublisher {
     log.warn({file: fileName, reason: "already exists on GitHub"}, "overwrite published file")
 
     const assets = await this.githubRequest<Array<Asset>>(`/repos/${this.info.owner}/${this.info.repo}/releases/${release.id}/assets`, this.token, null)
+    
+    log.debug('Assets:', assets);
+    log.debug(assets)
+    log.debug('fileName:', fileName);     
+    
     for (const asset of assets) {
       if (asset!.name === fileName) {
         await this.githubRequest<void>(`/repos/${this.info.owner}/${this.info.repo}/releases/assets/${asset!.id}`, this.token, null, "DELETE")
@@ -183,9 +188,9 @@ export class GitHubPublisher extends HttpPublisher {
       }
     }, this.token), this.context.cancellationToken, requestProcessor)
       .catch(e => {
-        console.log('Status:', e.statusCode);
-        console.log('description:', e.description);
-        console.log('errors:', e.description.errors);
+        log.debug('Status:', e.statusCode);
+        log.debug('description:', e.description);
+        log.debug('errors:', e.description.errors);
       
         if ((e as any).statusCode === 422 && e.description != null && e.description.errors != null && e.description.errors[0].code === "already_exists") {
           return this.overwriteArtifact(fileName, release)
