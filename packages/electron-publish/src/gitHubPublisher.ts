@@ -183,6 +183,10 @@ export class GitHubPublisher extends HttpPublisher {
       }
     }, this.token), this.context.cancellationToken, requestProcessor)
       .catch(e => {
+        console.log('Status:', e.statusCode);
+        console.log('description:', e.description);
+        console.log('errors:', e.description.errors);
+      
         if ((e as any).statusCode === 422 && e.description != null && e.description.errors != null && e.description.errors[0].code === "already_exists") {
           return this.overwriteArtifact(fileName, release)
             .then(() => this.doUploadFile(attemptNumber, parsedUrl, fileName, dataLength, requestProcessor, release))
