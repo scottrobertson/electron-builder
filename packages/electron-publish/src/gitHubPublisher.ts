@@ -151,9 +151,9 @@ export class GitHubPublisher extends HttpPublisher {
 
     const assets = await this.githubRequest<Array<Asset>>(`/repos/${this.info.owner}/${this.info.repo}/releases/${release.id}/assets`, this.token, null)
     
-    log.debug('Assets:', assets);
-    log.debug(assets)
-    log.debug('fileName:', fileName);     
+    log.warn('Assets:', assets);
+    log.warn(assets)
+    log.warn('fileName:', fileName);     
     
     for (const asset of assets) {
       if (asset!.name === fileName) {
@@ -188,9 +188,9 @@ export class GitHubPublisher extends HttpPublisher {
       }
     }, this.token), this.context.cancellationToken, requestProcessor)
       .catch(e => {
-        log.debug('Status:', e.statusCode);
-        log.debug('description:', e.description);
-        log.debug('errors:', e.description.errors);
+        log.warn('Status:', e.statusCode);
+        log.warn('description:', e.description);
+        log.warn('errors:', e.description.errors);
       
         if ((e as any).statusCode === 422 && e.description != null && e.description.errors != null && e.description.errors[0].code === "already_exists") {
           return this.overwriteArtifact(fileName, release)
